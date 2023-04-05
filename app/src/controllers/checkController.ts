@@ -33,7 +33,7 @@ class CheckController {
     let worker: Worker | null = null;
     try {
       worker = await new WorkerModel(req.logger).findByCardId(cardId);
-      if (!worker.id) throw 'Worker not found.'
+      if (!worker.id) throw "Worker not found.";
     } catch (err) {
       req.logger.warn("The worker was not found. Returning...");
       return res.sendStatus(400);
@@ -57,7 +57,7 @@ class CheckController {
     }
 
     // Send the email to the owner and the sender.
-    await new MailModel(req.logger).sendMail(worker.email, checkMoment);
+    await new MailModel(req.logger).sendMail(worker, checkMoment);
 
     // Return the response.
     req.logger.info("Returning...");
@@ -114,7 +114,7 @@ class CheckController {
         id: check.id,
         cardId: check.card_id,
         checkDate: check.check_time,
-      }
+      };
     });
 
     // Return the checks.

@@ -56,7 +56,7 @@ class CheckModel {
     this.logger.info("Trying to delete some check...");
     return await this.model.destroy({
       where: {
-        card_id: cardId
+        card_id: cardId,
       },
     });
   }
