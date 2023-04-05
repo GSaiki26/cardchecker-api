@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  cardchecker-api:
+    container_name: cardchecker-api
+    build: ./app
+    env_file:
+      - cardchecker-api.env
+      - cardchecker-db.env
+    ports:
+      - 3001:3001
+    networks:
+      - default
+      - service
+      - creds-api_service
+
+  cardchecker-db:
+    container_name: cardchecker-db
+    image: postgres:15.2-alpine
+    env_file:
+      - cardchecker-db.env
+    networks:
+      - default
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+
+networks:
+  default:
+  service:
+  creds-api_service:
+    external: true
