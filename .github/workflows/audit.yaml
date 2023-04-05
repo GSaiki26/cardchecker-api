@@ -1,0 +1,22 @@
+name: "Check audit"
+
+on:
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  check-audit:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04]
+        version: [19]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.version }}
+      
+      - name: 'Check yarn audit'
+        run: cd app; yarn audit
