@@ -79,12 +79,23 @@ class CheckController {
       });
     }
 
+    // Try to get the card's owner.
+    req.logger.info("Trying to get the card's owner...");
+    let worker: Worker | null = null;
+    try {
+      worker = await new WorkerModel(req.logger).findByCardId(req.params.cardId);
+      if (!worker.id) throw "Worker not found.";
+    } catch (err) {
+      req.logger.warn("The worker was not found. Returning...");
+      return res.sendStatus(400);
+    }
+
     // Check if the check exists in the database.
     const checkModel = new CheckModel(req.logger);
     let checks: Model[] = [];
     try {
       checks = await checkModel.findAll({
-        card_id: req.params.cardId,
+        fk_worker_id: worker.id,
       });
     } catch (err) {
       req.logger.warn(`Error while trying to find checks. Error: ${err}`);
