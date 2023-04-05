@@ -27,7 +27,7 @@ class AuthMiddleware {
     req.logger.info(`Request to ${req.method} ${req.url}`);
 
     // Check if the request has the master api key.
-    const auth = req.headers.authorization?.split(' ')[1];
+    const auth = req.headers.authorization?.split(" ")[1];
     const level = await CredentialModel.credLevel(req.logger, auth!);
 
     if (!level) {
