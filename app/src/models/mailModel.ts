@@ -21,7 +21,8 @@ class MailModel {
         this.logger.info('Sending email...');
 
         // Treat the checktime.
-        const date = checkTime.toLocaleDateString();
+        const dateInfo = checkTime.toLocaleDateString().split('/');
+        const date = `${dateInfo[1]}/${dateInfo[0]}/${dateInfo[2]}`;
         const time = checkTime.toLocaleTimeString();
 
         // Create the message
