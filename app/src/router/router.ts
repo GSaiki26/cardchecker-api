@@ -11,11 +11,11 @@ router.use(AuthMiddleware.auth);
 // Routes
 router.post("/check", CheckController.post.bind(CheckController));
 router.get("/check/:cardId", CheckController.get.bind(CheckController));
-router.delete("/check", CheckController.delete.bind(CheckController));
+router.delete("/check/:checkId", CheckController.delete.bind(CheckController));
 
 router.all("*", (req: Request, res: Response) => {
   req.logger.info("Route not found. Returning...");
-  res.sendStatus(304);
+  res.sendStatus(404);
 });
 
 // Code

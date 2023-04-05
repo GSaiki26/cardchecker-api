@@ -52,11 +52,11 @@ class CheckModel {
    * A method to delete a check in the database.
    * @param query - The query to delete the check.
    */
-  public async delete(cardId: string): Promise<number> {
+  public async delete(eventId: string): Promise<number> {
     this.logger.info("Trying to delete some check...");
     return await this.model.destroy({
       where: {
-        card_id: cardId,
+        id: eventId,
       },
     });
   }
