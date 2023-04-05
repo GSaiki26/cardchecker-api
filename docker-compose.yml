@@ -4,11 +4,12 @@ services:
   cardchecker-api:
     container_name: cardchecker-api
     build: ./app
+    restart: unless-stopped
     env_file:
       - cardchecker-api.env
       - cardchecker-db.env
-    ports:
-      - 3001:3001
+    # ports:
+    #   - 3001:80
     networks:
       - service
       - creds-api_service
@@ -17,8 +18,11 @@ services:
   cardchecker-db:
     container_name: cardchecker-db
     image: postgres:15.2-alpine
+    restart: unless-stopped
     env_file:
       - cardchecker-db.env
+    networks:
+      - service
     volumes:
       - ./data:/var/lib/postgresql/data
 

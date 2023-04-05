@@ -44,7 +44,6 @@ class CheckController {
     let model: Model | null = null;
     try {
       model = await checkModel.create({
-        card_id: cardId,
         check_time: checkMoment,
         fk_worker_id: worker.id,
       });
@@ -56,30 +55,21 @@ class CheckController {
       });
     }
 
-    // Send the email to the owner and the sender.
-    await new MailModel(req.logger).sendMail(worker, checkMoment);
-
     // Return the response.
     req.logger.info("Returning...");
     res.status(201).json({
       status: "Success",
       data: model.toJSON(),
     });
+
+    // Send the email to the owner and the sender.
+    await new MailModel(req.logger).sendMail(worker, checkMoment);
   }
 
   /**
    * GET /check/:cardId
    */
   public static async get(req: Request, res: Response): Promise<any> {
-    // Check the bearer.
-    if (req.permission != "admin") {
-      req.logger.warn("Bearer not authorized. Returning...");
-      return res.status(401).json({
-        status: "Error",
-        message: "Authorization has failed.",
-      });
-    }
-
     // Check if has the param.
     if (!req.params.cardId) {
       req.logger.warn("No card to check.");
