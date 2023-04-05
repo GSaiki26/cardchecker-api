@@ -8,8 +8,8 @@ services:
     env_file:
       - cardchecker-api.env
       - cardchecker-db.env
-    # ports:
-    #   - 3001:80
+    ports:
+      - 3001:80
     networks:
       - service
       - creds-api_service
