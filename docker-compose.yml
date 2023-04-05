@@ -10,23 +10,22 @@ services:
     ports:
       - 3001:3001
     networks:
-      - default
       - service
       - creds-api_service
+      - workers-api_service
 
   cardchecker-db:
     container_name: cardchecker-db
     image: postgres:15.2-alpine
     env_file:
       - cardchecker-db.env
-    networks:
-      - default
     volumes:
       - ./data:/var/lib/postgresql/data
 
 
 networks:
-  default:
   service:
   creds-api_service:
+    external: true
+  workers-api_service:
     external: true

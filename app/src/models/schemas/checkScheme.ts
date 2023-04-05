@@ -14,12 +14,12 @@ const CheckScheme: ModelAttributes = {
   },
   check_time: {
     type: DATE,
-    allowNull: false
+    allowNull: false,
   },
   fk_worker_id: {
     type: UUID,
-    allowNull: false
-  }
+    allowNull: false,
+  },
 };
 
 // Code
