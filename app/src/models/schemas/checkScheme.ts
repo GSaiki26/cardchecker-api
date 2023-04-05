@@ -8,10 +8,6 @@ const CheckScheme: ModelAttributes = {
     defaultValue: UUIDV4,
     primaryKey: true,
   },
-  card_id: {
-    type: STRING,
-    allowNull: false,
-  },
   check_time: {
     type: DATE,
     allowNull: false,
