@@ -21,8 +21,10 @@ class MailModel {
    */
   public async sendMail(worker: Worker, checkTime: Date): Promise<void> {
     // Treat the template args.
-    const date = checkTime.toLocaleDateString();
+    const dateInfo = checkTime.toLocaleDateString().split("/");
+    const date = `${dateInfo[1]}/${dateInfo[0]}/${dateInfo[2]}`;
     const time = checkTime.toLocaleTimeString();
+
     const firstName = worker.first_name;
     const lastName = worker.last_name;
 
