@@ -11,11 +11,12 @@ import { Worker } from "@types";
 class CheckController {
   /**
    * POST /check
+   * body { cardId, checkDate, sendMail }
    */
   public static async post(req: Request, res: Response): Promise<any> {
     // Check the request's body.
     req.logger.info("Checking body...");
-    const { cardId, checkDate } = req.body;
+    const { cardId, checkDate, sendMail } = req.body;
     if (!cardId || !checkDate) {
       req.logger.warn("Incorrect body. Returning...");
       return res.status(400).json({
@@ -63,7 +64,7 @@ class CheckController {
     });
 
     // Send the email to the owner and the sender.
-    await new MailModel(req.logger).sendMail(worker, checkMoment);
+    if (sendMail) await new MailModel(req.logger).sendMail(worker, checkMoment);
   }
 
   /**
