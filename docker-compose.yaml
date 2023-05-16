@@ -6,30 +6,31 @@ services:
     build: ./app
     restart: unless-stopped
     env_file:
-      - cardchecker-api.env
-      - cardchecker-db.env
+      - ./api.env
+      - ./db.env
     ports:
-      - 3001:80
+      - 3001:3000
     networks:
+      - internal
       - service
-      - creds-api_service
       - workers-api_service
+    volumes:
+      - ./certs:/app/certs:ro
 
   cardchecker-db:
     container_name: cardchecker-db
     image: postgres:15.2-alpine
     restart: unless-stopped
     env_file:
-      - cardchecker-db.env
+      - ./db.env
     networks:
-      - service
+      - internal
     volumes:
       - ./data:/var/lib/postgresql/data
 
 
 networks:
   service:
-  creds-api_service:
-    external: true
+  internal:
   workers-api_service:
     external: true

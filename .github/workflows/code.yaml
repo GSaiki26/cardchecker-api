@@ -1,0 +1,38 @@
+name: "Check audit"
+
+on:
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  security-snyk:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04]
+        version: [19]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run Snyk
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: ./app
+
+  quality-prettier:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+
+      - name: Install prettier
+        run: npm i -g prettier
+
+      - name: Run prettier
+        run: npx prettier --check ./app

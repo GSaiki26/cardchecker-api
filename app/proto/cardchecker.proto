@@ -1,0 +1,47 @@
+// Basics
+syntax = "proto3";
+package cardchecker;
+
+// Services
+service CardCheckerService {
+    rpc Create (CreateReq) returns (DefaultRes);
+    rpc GetRange (GetRangeReq) returns (GetRangeRes);
+    rpc Delete (DeleteReq) returns (DeleteRes);
+}
+
+// Messages
+message Check {
+    string id = 1;
+    string checkTime = 2;
+    string workerId = 3;
+}
+
+message DefaultRes {
+    Check data = 1;
+}
+
+// Create
+message CreateReq {
+    string cardId = 1;
+    string checkDate = 2;
+    bool sendMail = 3;
+}
+
+// GetRange
+message GetRangeReq {
+    string cardId = 1;
+    string dateInit = 2;
+    string dateEnd = 3;
+}
+message GetRangeRes {
+    repeated Check data = 1;
+}
+
+// Delete
+message DeleteReq {
+    string masterKey = 1;
+    string checkId = 2;
+}
+message DeleteRes {
+    string status = 1;
+}
