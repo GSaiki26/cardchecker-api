@@ -13,12 +13,12 @@ import DatabaseModel from "./models/databaseModel";
 // Data
 const HOST = "0.0.0.0:3000";
 const server = new grpc.Server();
-const creds = grpc.ServerCredentials.createSsl(readFileSync("./certs/ca.pem"), [
-  {
+const creds = grpc.ServerCredentials.createSsl(
+  readFileSync("./certs/ca.pem"),
+  [{
     cert_chain: readFileSync("./certs/server.pem"),
     private_key: readFileSync("./certs/server.pem.key"),
-  },
-]);
+  }], true);
 
 // Routes
 // CardChecker
