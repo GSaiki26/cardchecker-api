@@ -13,7 +13,7 @@ services:
     networks:
       - internal
       - service
-      - workers-api_service
+      - worker-api_service
     volumes:
       - ./certs:/app/certs:ro
 
@@ -32,5 +32,5 @@ services:
 networks:
   service:
   internal:
-  workers-api_service:
+  worker-api_service:
     external: true
