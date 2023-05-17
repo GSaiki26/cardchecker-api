@@ -6,10 +6,10 @@ import LoggerFactory from "../logger/loggerFactory";
 import CheckModel from "../models/checkModel";
 import MailModel from "../models/mailModel";
 import WorkerModel from "../models/workerModel";
-
-import * as types from "../types/types";
 import SecurityModel from "../models/securityModel";
-import { Model } from "sequelize";
+
+// Types
+import * as types from "../types/types";
 
 // Class
 class CardCheckerService {
@@ -40,7 +40,8 @@ class CardCheckerService {
 
     // Get the card's owner.
     const worker = await this.getWorkerByCardId(logger, cardId);
-    if (!worker) {
+    if (!worker?.id) {
+      console.log("FUCK");
       return cb({
         name: "400",
         message: "Invalid request."

@@ -41,32 +41,31 @@ class WorkersModel {
     // Try to find the card Id.
     this.logger.info("Trying to find the card id #" + cardId);
 
-    let worker: types.ProtoWorker;
+    let reqRes: types.ProtoWorkerDefaultRes;
+    const reqBody = {cardId: cardId};
+
     try {
-      worker = await this.doRequest<
-        types.ProtoWorkerDefaultRes,
-        types.ProtoWorker
-      >("GetByCardId", (err, res) => {
-        if (err) throw err;
-        return res;
-      });
+      reqRes = await this.doRequest("GetByCardId", reqBody);
     } catch (err) {
       this.logger.error("Couldn't find the worker. " + err);
       return;
     }
 
     this.logger.info("Worker found.");
-    return worker;
+    return reqRes.data;
   }
 
-  private doRequest<ResponseType, ReturnType = any>(
-    method: string,
-    cb: (err: Error, res: ResponseType) => any
-  ): Promise<ReturnType> {
-    return new Promise((resolve, reject) => {
-      this.logger.info("Doing request to: workers/" + method);
-      return resolve(WorkersModel.client[method](cb));
+  private async doRequest<ResponseType = types.ProtoWorkerDefaultRes>(method: string, req: any): Promise<ResponseType> {
+    this.logger.info("Doing request to /worker.WorkerService/" + method);
+
+    const pros = new Promise<ResponseType>((resolve, reject) => {
+      WorkersModel.client[method](req, (err: Error, res: ResponseType) => {
+        if (err) reject(err);
+        return resolve(res);
+      });
     });
+
+    return await pros;
   }
 }
 

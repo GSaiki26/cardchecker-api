@@ -84,7 +84,7 @@ class CheckModel {
    */
   public async findByRange(workerId: string, dateInit: Date, dateEnd: Date): Promise<Check[]> {
     this.logger.info(
-      `Trying to find all the checks between: ${dateInit} - ${dateEnd}...`
+      `Trying to find all the checks between: ${dateInit.toISOString()} - ${dateEnd.toISOString()}...`
     );
 
     try {

@@ -34,7 +34,7 @@ server.addService(cardCheckerDef.CardCheckerService.service, {
 // Code
 async function main() {
   // Do the migrations.
-  const logger = LoggerFactory.createLogger("SERVER " + process.pid);
+  const logger = LoggerFactory.createLogger("SERVER");
   
   // Runs the migrations.
   if (cluster.isPrimary) {
@@ -55,7 +55,7 @@ async function main() {
 
   // Start the server.
   server.bindAsync(HOST, creds, (err, port) => {
-    const logger = LoggerFactory.createLogger("SERVER pid#" + process.pid);
+    const logger = LoggerFactory.createLogger("SERVER");
 
     if (err) {
       logger.error("Couldn't start the server. " + err);
