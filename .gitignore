@@ -1,8 +1,10 @@
 # Folders
-node_modules
+certs
 data
+node_modules
 
 # Files
 *.env
 *.lock
 .dockerignore
+worker.proto
