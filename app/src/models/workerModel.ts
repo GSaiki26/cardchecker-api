@@ -42,7 +42,7 @@ class WorkersModel {
     this.logger.info("Trying to find the card id #" + cardId);
 
     let reqRes: types.ProtoWorkerDefaultRes;
-    const reqBody = {cardId: cardId};
+    const reqBody = { cardId: cardId };
 
     try {
       reqRes = await this.doRequest("GetByCardId", reqBody);
@@ -55,7 +55,10 @@ class WorkersModel {
     return reqRes.data;
   }
 
-  private async doRequest<ResponseType = types.ProtoWorkerDefaultRes>(method: string, req: any): Promise<ResponseType> {
+  private async doRequest<ResponseType = types.ProtoWorkerDefaultRes>(
+    method: string,
+    req: any
+  ): Promise<ResponseType> {
     this.logger.info("Doing request to /worker.WorkerService/" + method);
 
     const pros = new Promise<ResponseType>((resolve, reject) => {

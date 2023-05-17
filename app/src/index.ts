@@ -15,10 +15,14 @@ const HOST = "0.0.0.0:3000";
 const server = new grpc.Server();
 const creds = grpc.ServerCredentials.createSsl(
   readFileSync("./certs/ca.pem"),
-  [{
-    cert_chain: readFileSync("./certs/server.pem"),
-    private_key: readFileSync("./certs/server.pem.key"),
-  }], true);
+  [
+    {
+      cert_chain: readFileSync("./certs/server.pem"),
+      private_key: readFileSync("./certs/server.pem.key"),
+    },
+  ],
+  true
+);
 
 // Routes
 // CardChecker
@@ -35,7 +39,7 @@ server.addService(cardCheckerDef.CardCheckerService.service, {
 async function main() {
   // Do the migrations.
   const logger = LoggerFactory.createLogger("SERVER");
-  
+
   // Runs the migrations.
   if (cluster.isPrimary) {
     await DatabaseModel.migrations(logger);
@@ -44,7 +48,7 @@ async function main() {
       for (let i = 0; i < cpus().length; i++) {
         cluster.fork();
       }
-  
+
       cluster.on("exit", (clusterWorker, code) => {
         const workerPid = clusterWorker.process.pid;
         logger.info(`The worker #${workerPid} has exited with code: ${code}`);

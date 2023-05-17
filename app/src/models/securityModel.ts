@@ -4,7 +4,6 @@ import { Model } from "sequelize";
 // Types
 import { DbCheck, ProtoCheck } from "../types/types";
 
-
 type Check = Model<DbCheck>;
 
 // Class

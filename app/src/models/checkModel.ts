@@ -63,15 +63,15 @@ class CheckModel {
     try {
       const check = await this.model.findOne({
         where: {
-          id: checkId
-        }
+          id: checkId,
+        },
       });
       if (!check) throw "Any check found.";
 
       this.logger.info("The check was found.");
       return check;
     } catch (err) {
-      this.logger.warn("Couldn\'t find the check. " + err);
+      this.logger.warn("Couldn't find the check. " + err);
       return;
     }
   }
@@ -82,7 +82,11 @@ class CheckModel {
    * @param dateInit - The start of the period.
    * @param dateEnd - The end of the period.
    */
-  public async findByRange(workerId: string, dateInit: Date, dateEnd: Date): Promise<Check[]> {
+  public async findByRange(
+    workerId: string,
+    dateInit: Date,
+    dateEnd: Date
+  ): Promise<Check[]> {
     this.logger.info(
       `Trying to find all the checks between: ${dateInit.toISOString()} - ${dateEnd.toISOString()}...`
     );

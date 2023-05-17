@@ -44,9 +44,9 @@ class CardCheckerService {
       console.log("FUCK");
       return cb({
         name: "400",
-        message: "Invalid request."
+        message: "Invalid request.",
       });
-    };
+    }
 
     // Create the new check.
     const checkModel = new CheckModel(logger);
@@ -57,14 +57,14 @@ class CardCheckerService {
     if (!model) {
       return cb({
         name: "400",
-        message: "Invalid request."
+        message: "Invalid request.",
       });
     }
 
     // Return the response.
     logger.info("Returning the check to the client...");
     cb(null, {
-      data: SecurityModel.dbCheckToProtoCheck(model)
+      data: SecurityModel.dbCheckToProtoCheck(model),
     });
 
     // Send the email to the owner and the sender.
@@ -89,37 +89,41 @@ class CardCheckerService {
       logger.warn("The worker was not found.");
       return cb({
         name: "400",
-        message: "Invalid request."
+        message: "Invalid request.",
       });
-    };
+    }
 
     // Check if the provided period is valid.
     if (!SecurityModel.isValidIsoFormat([dateInit, dateEnd])) {
       logger.warn("Invalid request.");
       return cb({
         name: "400",
-        message: "Invalid request."
+        message: "Invalid request.",
       });
     }
 
     // Check if the check exists in the database.
     const checks = await new CheckModel(logger).findByRange(
-      worker.id, new Date(dateInit), new Date(dateEnd)
+      worker.id,
+      new Date(dateInit),
+      new Date(dateEnd)
     );
     if (!checks.length) {
       return cb({
         name: "400",
-        message: "Invalid request."
+        message: "Invalid request.",
       });
     }
 
     // Treat the data from the checks.
-    const treated = checks.map((check) => SecurityModel.dbCheckToProtoCheck(check));
+    const treated = checks.map((check) =>
+      SecurityModel.dbCheckToProtoCheck(check)
+    );
 
     // Return the checks.
     logger.info("Returning informations from the checks...");
     cb(null, {
-      data: treated
+      data: treated,
     });
   }
 
@@ -140,7 +144,7 @@ class CardCheckerService {
       logger.error("Master key not authorized.");
       return cb({
         name: "403",
-        message: "Not authorized."
+        message: "Not authorized.",
       });
     }
 
@@ -149,12 +153,12 @@ class CardCheckerService {
     if (!affectedRows) {
       return cb({
         name: "400",
-        message: "Invalid checkId"
+        message: "Invalid checkId",
       });
     }
 
     cb(null, {
-      status: "Success"
+      status: "Success",
     });
   }
 
@@ -164,7 +168,10 @@ class CardCheckerService {
    * @param logger - The logger object to trace the stack.
    * @param cardId - The card id. It must belongs to some worker.
    */
-  private static async getWorkerByCardId(logger: Logger, cardId: string): Promise<types.ProtoWorker | undefined> {
+  private static async getWorkerByCardId(
+    logger: Logger,
+    cardId: string
+  ): Promise<types.ProtoWorker | undefined> {
     // Check if the provided card is valid.
     if (!SecurityModel.isValidCardId(cardId)) {
       logger.info("The provided card is invalid.");
