@@ -1,5 +1,5 @@
 # CardChecker API
-[![Check code](https://github.com/GSaiki26/cardchecker-api/actions/workflows/code.yaml/badge.svg?branch=master)](https://github.com/GSaiki26/cardchecker-api/actions/workflows/code.yaml)
+[![Check code](https://github.com/GSaiki26/cardchecker-api/actions/workflows/code.yaml/badge.svg)](https://github.com/GSaiki26/cardchecker-api/actions/workflows/code.yaml)
 
 The cardchecker api is a nodeJS application created to manage checks that are sent by the cardchecker-client.
 It's basically a card control application.
@@ -33,6 +33,6 @@ Otherwise, the API uses these envs:
 | K8S_ENABLED    | false           | Set to `enable` if you're using Kubernetes in your project.<br />If this option is marked as `false`, the nodeJS will use the Cluster module, so the project'll become multi-CPU.                              |
 | MAIL_CC        | MAIL_CC         | Define all the MAIL's options to use the `node-mailer`. This field is used to define the CC from the mail.                                                                                                       |
 | MAIL_USER      | MAIL_USER       | This field is used to define the email owner.                                                                                                                                                                      |
-| MAIL_PASSWD    | MAIL_PASSWD     | This field is used to define the password from the email. If using google mail, checkout this doc:[Google Apps Passwords](https://support.google.com/accounts/answer/185833?hl=en).                                   |
+| MAIL_PASSWD    | MAIL_PASSWD     | This field is used to define the password from the email. If using google mail, checkout this doc: [Google Apps Passwords](https://support.google.com/accounts/answer/185833?hl=en).                                   |
 | MASTER_KEY     | MASTER_KEY      | This field is used to define the masterkey. By default, all the incoming requests are readen with normal previleges since all they have a certificate signed by the CA. But some features use a higher permission. |
 | WORKER_API_URI | worker-api:3000 | This field is used to define the uri to the `worker-api`. You need to setup this api in order to use this application. You can clone this repos: [worker-api](https://github.com/GSaiki26/worker-api).             |
