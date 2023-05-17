@@ -1,15 +1,21 @@
 // Libs
 import { randomUUID } from "crypto";
-import { Model } from "sequelize";
+
+import { Model, Op } from "sequelize";
 import { Logger } from "winston";
 
-import DatabaseModel from "@models/databaseModel";
-import CheckScheme from "@models/schemas/checkScheme";
+import DatabaseModel from "./databaseModel";
+import CheckScheme from "./schemas/checkScheme";
+
+import { DbCheck } from "../types/types";
+
+// Types
+type Check = Model<DbCheck>;
 
 // Class
 class CheckModel {
   private logger: Logger;
-  private model = DatabaseModel.seq.define("checks", CheckScheme);
+  private model = DatabaseModel.seq.define<Check>("checks", CheckScheme);
 
   constructor(logger: Logger) {
     this.logger = logger;
@@ -30,35 +36,98 @@ class CheckModel {
 
   /**
    * A method to create a check in the database.
-   * @param query - The query to create the check.
+   * @param entry - The Dbcheck entry to be added in the database.
    */
-  public async create(entry: any): Promise<Model> {
+  public async create(entry: Omit<DbCheck, "id">): Promise<Check | undefined> {
     this.logger.info("Trying to create some check...");
-    return await this.model.create(entry);
+
+    // try to create the check.
+    try {
+      const model = await this.model.create(entry as any);
+      this.logger.info("The check was created.");
+
+      return model;
+    } catch (err) {
+      this.logger.warn("Couldn't create the check. " + err);
+      return;
+    }
   }
 
   /**
-   * A method to find a check in the database.
-   * @param query - The query to find the check.
+   * A method to find some check in the database.
+   * @param checkId - The id from the check.
    */
-  public async findAll(query: any): Promise<Model[]> {
-    this.logger.info("Trying to find some check...");
-    return await this.model.findAll({
-      where: query,
-    });
+  public async findById(checkId: string): Promise<Check | undefined> {
+    this.logger.info(`Trying to find the check #${checkId}`);
+
+    try {
+      const check = await this.model.findOne({
+        where: {
+          id: checkId,
+        },
+      });
+      if (!check) throw "Any check found.";
+
+      this.logger.info("The check was found.");
+      return check;
+    } catch (err) {
+      this.logger.warn("Couldn't find the check. " + err);
+      return;
+    }
+  }
+
+  /**
+   * A method to find all checks  between a period in the database.
+   * @param workerId - The card the id to search.
+   * @param dateInit - The start of the period.
+   * @param dateEnd - The end of the period.
+   */
+  public async findByRange(
+    workerId: string,
+    dateInit: Date,
+    dateEnd: Date
+  ): Promise<Check[]> {
+    this.logger.info(
+      `Trying to find all the checks between: ${dateInit.toISOString()} - ${dateEnd.toISOString()}...`
+    );
+
+    try {
+      const checks = await this.model.findAll<Check>({
+        where: {
+          fk_worker_id: workerId,
+          check_time: {
+            [Op.between]: [dateInit, dateEnd],
+          },
+        },
+      });
+      this.logger.info(`Was found ${checks.length} checks.`);
+
+      return checks;
+    } catch (err) {
+      this.logger.warn("Couldn't find the checks. " + err);
+      return [];
+    }
   }
 
   /**
    * A method to delete a check in the database.
-   * @param query - The query to delete the check.
+   * @param checkId - The check id to be deleted.
    */
-  public async delete(eventId: string): Promise<number> {
+  public async delete(checkId: string): Promise<number> {
     this.logger.info("Trying to delete some check...");
-    return await this.model.destroy({
-      where: {
-        id: eventId,
-      },
-    });
+    try {
+      const rowsDeleted = await this.model.destroy({
+        where: {
+          id: checkId,
+        },
+      });
+      this.logger.info(`${rowsDeleted} rows were deleted.`);
+
+      return rowsDeleted;
+    } catch (err) {
+      this.logger.warning("Couldn't delete the rows. " + err);
+      return 0;
+    }
   }
 }
 

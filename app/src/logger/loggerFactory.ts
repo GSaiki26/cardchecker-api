@@ -17,7 +17,7 @@ class LoggerFactory {
         }),
         printf(
           (info) =>
-            `[${info.level}] ${info.timestamp} (${owner}) - ${info.message}`
+            `[${info.level}] ${info.timestamp} (SERVER[${process.pid}] ${owner}) - ${info.message}`
         )
       ),
       transports: [new winston.transports.Console()],

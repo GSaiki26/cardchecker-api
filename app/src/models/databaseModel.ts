@@ -1,5 +1,8 @@
 // Libs
+import { Logger } from "winston";
 import sequelize from "sequelize";
+
+import CheckModel from "./checkModel";
 
 // Class
 /**
@@ -21,6 +24,12 @@ class DatabaseModel {
     },
     logging: false,
   });
+
+  public static async migrations(logger: Logger) {
+    logger.info("Starting migrations...");
+    const credsModel = new CheckModel(logger);
+    await credsModel.sync();
+  }
 }
 
 // Code
