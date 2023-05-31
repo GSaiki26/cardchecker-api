@@ -1,0 +1,25 @@
+name: "Docker Build"
+
+on:
+  pull_request:
+    branches: [ master, develop ]
+  push:
+    branches: [ master ]
+
+jobs:
+  build-project:
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ ubuntu-22.04 ]
+        version: [ 19 ]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.version }}
+
+      - name: try to build the project
+        run: docker-compose build;

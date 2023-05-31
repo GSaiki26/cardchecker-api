@@ -5,10 +5,12 @@ import { render } from "ejs";
 import NodeMailer from "nodemailer";
 import { Logger } from "winston";
 
-import { ProtoWorker } from "../types/types";
+import workerMessages from "../proto/worker_pb";
 
 // Class
 class MailModel {
+  private mailUser = process.env.MAIL_USER;
+  private mailPass = process.env.MAIL_PASS;
   private logger: Logger;
 
   constructor(logger: Logger) {
@@ -19,14 +21,14 @@ class MailModel {
    * A method to send the email to the card's owner, with the moment
    * of the cardcheck.
    */
-  public async sendMail(worker: ProtoWorker, checkTime: Date): Promise<void> {
+  public async sendMail(worker: workerMessages.Worker, checkTime: Date): Promise<void> {
     // Treat the template args.
     const dateInfo = checkTime.toLocaleDateString().split("/");
     const date = `${dateInfo[1]}/${dateInfo[0]}/${dateInfo[2]}`;
     const time = checkTime.toLocaleTimeString();
 
-    const firstName = worker.firstName;
-    const lastName = worker.lastName;
+    const firstName = worker.getFirstname();
+    const lastName = worker.getLastname();
 
     // Create the message
     const template = readFileSync("./src/templates/message.html");
@@ -42,14 +44,14 @@ class MailModel {
     const transport = NodeMailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        user: this.mailUser,
+        pass: this.mailPass,
       },
     });
     try {
       await transport.sendMail({
-        to: worker.email,
-        subject: `Controle de ponto ${new Date().toLocaleDateString()}`,
+        to: worker.getEmail(),
+        subject: `Controle de ponto ${date}`,
         cc: process.env.MAIL_CC,
         html: message,
       });

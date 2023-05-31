@@ -113,7 +113,7 @@ class CheckModel {
    * A method to delete a check in the database.
    * @param checkId - The check id to be deleted.
    */
-  public async delete(checkId: string): Promise<number> {
+  public async delete(checkId: string): Promise<number | void> {
     this.logger.info("Trying to delete some check...");
     try {
       const rowsDeleted = await this.model.destroy({
@@ -125,8 +125,8 @@ class CheckModel {
 
       return rowsDeleted;
     } catch (err) {
-      this.logger.warning("Couldn't delete the rows. " + err);
-      return 0;
+      this.logger.warn("Couldn't delete the rows. " + err);
+      return;
     }
   }
 }

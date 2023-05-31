@@ -1,12 +1,10 @@
 version: '3.9'
 
-x-loki: &loki
-  logging:
-    driver: loki
-    options:
-      loki-url: "https://loki-url/loki/api/v1/push"
-      loki-headers: "Authorization=Basic user:pass"
-      loki-tls-ca-file: "./certs/ca.pem"
+# x-loki-logging: &loki
+#   logging:
+#     driver: loki
+#     options:
+#       loki-url: "loki-url"
 
 services:
   cardchecker-api:

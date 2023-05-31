@@ -1,16 +1,18 @@
 // Libs
-import { Model } from "sequelize";
+import { Logger } from "winston";
 
-// Types
-import { DbCheck, ProtoCheck } from "../types/types";
-
-type Check = Model<DbCheck>;
+import WorkerModel from "./workerModel";
 
 // Class
 class SecurityModel {
-  public static isValidCardId(cardId: string): boolean {
+  /**
+   * A method to check if the card id is valid.
+   * @param cardId - The card id to be checked.
+   */
+  public static async isValidCardId(cardId: string): Promise<boolean> {
+    // Check the format.
     if (!cardId) return false;
-    if (cardId.length != 10) return false;
+    if ( !(/^.{10}$/.test(cardId)) ) return false;
     return true;
   }
 
@@ -21,15 +23,6 @@ class SecurityModel {
     }
 
     return true;
-  }
-
-  public static dbCheckToProtoCheck(dbCheck: Check): ProtoCheck {
-    const check = dbCheck.toJSON();
-    return {
-      id: check.id,
-      checkTime: check.check_time.toISOString(),
-      workerId: check.fk_worker_id,
-    };
   }
 }
 
