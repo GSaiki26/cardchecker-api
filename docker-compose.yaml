@@ -11,7 +11,7 @@ services:
     container_name: cardchecker-api
     build: ./app
     restart: unless-stopped
-    <<: *loki
+    # <<: *loki
     env_file:
       - ./api.env
       - ./db.env
@@ -28,7 +28,7 @@ services:
     container_name: cardchecker-db
     image: postgres:15.2-alpine
     restart: unless-stopped
-    <<: *loki
+    # <<: *loki
     env_file:
       - ./db.env
     networks:

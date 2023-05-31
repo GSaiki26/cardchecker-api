@@ -12,7 +12,7 @@ class SecurityModel {
   public static async isValidCardId(cardId: string): Promise<boolean> {
     // Check the format.
     if (!cardId) return false;
-    if ( !(/^.{10}$/.test(cardId)) ) return false;
+    if (!/^.{10}$/.test(cardId)) return false;
     return true;
   }
 

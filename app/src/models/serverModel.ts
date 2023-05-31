@@ -40,7 +40,7 @@ class ServerModel {
         logger.error("Couldn't start the server. " + err);
         return;
       }
-  
+
       this.server.start();
       logger.info(`The server is up on port: ${port}`);
     });

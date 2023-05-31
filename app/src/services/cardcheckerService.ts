@@ -50,24 +50,31 @@ class CardCheckerService {
 
     // Get the card's owner.
     const worker = await new WorkerModel(logger).findByCardId(cardid);
-    if (!worker) return cb({
-      name: "400",
-      message: "Worker not found.",
-    });
+    if (!worker)
+      return cb({
+        name: "400",
+        message: "Worker not found.",
+      });
 
     // Create the new check.
     const check = await new CheckModel(logger).create({
       check_time: checkMoment,
       fk_worker_id: worker.getId(),
     });
-    if (!check) return cb({
-      name: "400",
-      message: "Invalid request.",
-    });
+    if (!check)
+      return cb({
+        name: "400",
+        message: "Invalid request.",
+      });
 
     // Return the response.
     logger.info("Returning the check to the client...");
-    cb(null, new cardcheckerMessages.DefaultRes().setData(this.dbCheckToProtoCheck(check)));
+    cb(
+      null,
+      new cardcheckerMessages.DefaultRes().setData(
+        this.dbCheckToProtoCheck(check)
+      )
+    );
 
     // Send the email to the owner and the sender.
     if (sendmail) await new MailModel(logger).sendMail(worker, checkMoment);
@@ -105,10 +112,11 @@ class CardCheckerService {
 
     // Try to find the worker in the database.
     const worker = await new WorkerModel(logger).findByCardId(cardid);
-    if (!worker) return cb({
-      name: "400",
-      message: "Worker not found.",
-    });
+    if (!worker)
+      return cb({
+        name: "400",
+        message: "Worker not found.",
+      });
 
     // Check if the check exists in the database.
     const checks = await new CheckModel(logger).findByRange(
@@ -116,15 +124,14 @@ class CardCheckerService {
       new Date(dateinit),
       new Date(dateend)
     );
-    if (!checks.length) return cb({
-      name: "400",
-      message: "Invalid request.",
-    });
+    if (!checks.length)
+      return cb({
+        name: "400",
+        message: "Invalid request.",
+      });
 
     // Treat the data from the checks.
-    const treated = checks.map((check) =>
-      this.dbCheckToProtoCheck(check)
-    );
+    const treated = checks.map((check) => this.dbCheckToProtoCheck(check));
 
     // Return the checks.
     logger.info("Returning informations from the checks...");
@@ -166,15 +173,17 @@ class CardCheckerService {
 
   /**
    * A method to convert a DB check entry to a grpc message check.
-   * @param dbCheck 
-   * @returns 
+   * @param dbCheck
+   * @returns
    */
-  public static dbCheckToProtoCheck(dbCheck: Model<types.DbCheck>): cardcheckerMessages.Check {
+  public static dbCheckToProtoCheck(
+    dbCheck: Model<types.DbCheck>
+  ): cardcheckerMessages.Check {
     const check = dbCheck.toJSON();
     return new cardcheckerMessages.Check()
-    .setId(check.id)
-    .setChecktime(check.check_time.toISOString())
-    .setWorkerid(check.fk_worker_id);
+      .setId(check.id)
+      .setChecktime(check.check_time.toISOString())
+      .setWorkerid(check.fk_worker_id);
   }
 }
 

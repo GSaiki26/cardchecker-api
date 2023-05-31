@@ -21,7 +21,10 @@ class MailModel {
    * A method to send the email to the card's owner, with the moment
    * of the cardcheck.
    */
-  public async sendMail(worker: workerMessages.Worker, checkTime: Date): Promise<void> {
+  public async sendMail(
+    worker: workerMessages.Worker,
+    checkTime: Date
+  ): Promise<void> {
     // Treat the template args.
     const dateInfo = checkTime.toLocaleDateString().split("/");
     const date = `${dateInfo[1]}/${dateInfo[0]}/${dateInfo[2]}`;

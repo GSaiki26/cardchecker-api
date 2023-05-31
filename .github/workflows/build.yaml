@@ -21,5 +21,8 @@ jobs:
         with:
           node-version: ${{ matrix.version }}
 
+      - name: Create the envs
+        run: cp api.env.example api.env; cp db.env.example db.env;
+
       - name: try to build the project
         run: docker-compose build;

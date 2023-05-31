@@ -25,4 +25,4 @@ jobs:
         run: npm i -g prettier
 
       - name: Run prettier
-        run: yarn run linter
+        run: cd app; yarn run linter

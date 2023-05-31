@@ -1,6 +1,6 @@
 # CardChecker API
 
-[![Check code](https://github.com/GSaiki26/cardchecker-api/actions/workflows/code.yaml/badge.svg)](https://github.com/GSaiki26/cardchecker-api/actions/workflows/code.yaml)
+[![Code quality](https://github.com/GSaiki26/cardchecker-api/actions/workflows/quality.yaml/badge.svg)](https://github.com/GSaiki26/cardchecker-api/actions/workflows/quality.yaml) [![Docker Build](https://github.com/GSaiki26/cardchecker-api/actions/workflows/build.yaml/badge.svg)](https://github.com/GSaiki26/cardchecker-api/actions/workflows/build.yaml) [![Security](https://github.com/GSaiki26/cardchecker-api/actions/workflows/security.yaml/badge.svg)](https://github.com/GSaiki26/cardchecker-api/actions/workflows/security.yaml)
 
 The cardchecker api is a nodeJS application created to manage checks that are sent by the cardchecker-client.
 It's basically a card control application.

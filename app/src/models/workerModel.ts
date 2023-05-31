@@ -33,11 +33,10 @@ class WorkerModel {
     this.logger.info("Trying to find the card id #" + cardId);
 
     // Define the request's body.
-    const reqBody = new messages.GetByCardIdReq()
-    .setCardid(cardId);
+    const reqBody = new messages.GetByCardIdReq().setCardid(cardId);
 
     // Do the request.
-    const res: messages.DefaultRes | null = await new Promise(resolve => {
+    const res: messages.DefaultRes | null = await new Promise((resolve) => {
       WorkerModel.client.getByCardId(reqBody, (err, res) => {
         if (err) {
           this.logger.error("Couldn't find the worker. " + err);
