@@ -1,12 +1,15 @@
 // Libs
 import { ServerUnaryCall, sendUnaryData } from "@grpc/grpc-js";
+import { Model } from "sequelize";
 import { Logger } from "winston";
+
+import cardcheckerMessages from "../proto/cardchecker_pb";
 
 import LoggerFactory from "../logger/loggerFactory";
 import CheckModel from "../models/checkModel";
 import MailModel from "../models/mailModel";
-import WorkerModel from "../models/workerModel";
 import SecurityModel from "../models/securityModel";
+import WorkerModel from "../models/workerModel";
 
 // Types
 import * as types from "../types/types";
@@ -17,8 +20,8 @@ class CardCheckerService {
    * A method to create a check.
    */
   public static async create(
-    call: ServerUnaryCall<types.ProtoCreateReq, any>,
-    cb: sendUnaryData<types.ProtoDefaultRes>
+    call: ServerUnaryCall<cardcheckerMessages.CreateReq, any>,
+    cb: sendUnaryData<cardcheckerMessages.DefaultRes>
   ): Promise<any> {
     // Define the logger.
     const logger = LoggerFactory.createLogger(call.getPeer());
@@ -26,122 +29,130 @@ class CardCheckerService {
 
     // Check the request's body.
     logger.info("Checking body...");
-    const { cardId, checkDate, sendMail } = call.request;
+    const { cardid, checkdate, sendmail } = call.request.toObject();
 
-    // Check if the request's checkDate is valid.
-    if (!SecurityModel.isValidIsoFormat([checkDate])) {
-      logger.warn("Incorrect body.");
+    if (!SecurityModel.isValidCardId(cardid)) {
+      logger.warn("Invalid card id.");
       return cb({
         name: "400",
-        message: "Invalid request.",
+        message: "Invalid card id.",
       });
     }
-    const checkMoment = new Date(checkDate);
+
+    if (!SecurityModel.isValidIsoFormat([checkdate])) {
+      logger.warn("CheckDate is in a wrong format.");
+      return cb({
+        name: "400",
+        message: "Invalid checkdate format.",
+      });
+    }
+    const checkMoment = new Date(checkdate);
 
     // Get the card's owner.
-    const worker = await this.getWorkerByCardId(logger, cardId);
-    if (!worker?.id) {
-      console.log("FUCK");
+    const worker = await new WorkerModel(logger).findByCardId(cardid);
+    if (!worker)
       return cb({
         name: "400",
-        message: "Invalid request.",
+        message: "Worker not found.",
       });
-    }
 
     // Create the new check.
-    const checkModel = new CheckModel(logger);
-    const model = await checkModel.create({
+    const check = await new CheckModel(logger).create({
       check_time: checkMoment,
-      fk_worker_id: worker.id,
+      fk_worker_id: worker.getId(),
     });
-    if (!model) {
+    if (!check)
       return cb({
         name: "400",
         message: "Invalid request.",
       });
-    }
 
     // Return the response.
     logger.info("Returning the check to the client...");
-    cb(null, {
-      data: SecurityModel.dbCheckToProtoCheck(model),
-    });
+    cb(
+      null,
+      new cardcheckerMessages.DefaultRes().setData(
+        this.dbCheckToProtoCheck(check)
+      )
+    );
 
     // Send the email to the owner and the sender.
-    if (sendMail) await new MailModel(logger).sendMail(worker, checkMoment);
+    if (sendmail) await new MailModel(logger).sendMail(worker, checkMoment);
   }
 
   /**
    * A method to get all the checks between some period range.
    */
   public static async getRange(
-    call: ServerUnaryCall<types.ProtoGetRangeReq, any>,
-    cb: sendUnaryData<types.ProtoGetRangeRes>
+    call: ServerUnaryCall<cardcheckerMessages.GetRangeReq, any>,
+    cb: sendUnaryData<cardcheckerMessages.GetRangeRes>
   ): Promise<any> {
     // Define the logger.
     const logger = LoggerFactory.createLogger(call.getPeer());
     logger.info("Request to: " + call.getPath());
 
-    // Check if the card id is valid.
-    const { cardId, dateInit, dateEnd } = call.request;
-    const worker = await this.getWorkerByCardId(logger, cardId);
-    if (!worker) {
-      logger.warn("The worker was not found.");
+    // Check the request's body.
+    const { cardid, dateinit, dateend } = call.request.toObject();
+
+    if (!SecurityModel.isValidCardId(cardid)) {
+      logger.warn("Invalid card id.");
       return cb({
         name: "400",
-        message: "Invalid request.",
+        message: "Invalid card id.",
       });
     }
 
-    // Check if the provided period is valid.
-    if (!SecurityModel.isValidIsoFormat([dateInit, dateEnd])) {
-      logger.warn("Invalid request.");
+    if (!SecurityModel.isValidIsoFormat([dateinit, dateend])) {
+      logger.warn("CheckDate is in a wrong format.");
       return cb({
         name: "400",
-        message: "Invalid request.",
+        message: "Invalid checkdate format.",
       });
     }
+
+    // Try to find the worker in the database.
+    const worker = await new WorkerModel(logger).findByCardId(cardid);
+    if (!worker)
+      return cb({
+        name: "400",
+        message: "Worker not found.",
+      });
 
     // Check if the check exists in the database.
     const checks = await new CheckModel(logger).findByRange(
-      worker.id,
-      new Date(dateInit),
-      new Date(dateEnd)
+      worker.getId(),
+      new Date(dateinit),
+      new Date(dateend)
     );
-    if (!checks.length) {
+    if (!checks.length)
       return cb({
         name: "400",
         message: "Invalid request.",
       });
-    }
 
     // Treat the data from the checks.
-    const treated = checks.map((check) =>
-      SecurityModel.dbCheckToProtoCheck(check)
-    );
+    const treated = checks.map((check) => this.dbCheckToProtoCheck(check));
 
     // Return the checks.
     logger.info("Returning informations from the checks...");
-    cb(null, {
-      data: treated,
-    });
+    cb(null, new cardcheckerMessages.GetRangeRes().setDataList(treated));
   }
 
   /**
    * A method to delete some check.
    */
   public static async delete(
-    call: ServerUnaryCall<types.ProtoDeleteReq, any>,
-    cb: sendUnaryData<types.ProtoDeleteRes>
+    call: ServerUnaryCall<cardcheckerMessages.DeleteReq, any>,
+    cb: sendUnaryData<cardcheckerMessages.DeleteRes>
   ): Promise<any> {
     // Define the logger.
     const logger = LoggerFactory.createLogger(call.getPeer());
     logger.info("Request to: " + call.getPath());
 
     // Check the bearer.
-    const { checkId, masterKey } = call.request;
-    if (process.env.MASTER_KEY != masterKey) {
-      logger.error("Master key not authorized.");
+    const { checkid, masterkey } = call.request.toObject();
+    if (process.env.MASTER_KEY != masterkey) {
+      logger.warn("Master key not authorized.");
       return cb({
         name: "403",
         message: "Not authorized.",
@@ -149,38 +160,30 @@ class CardCheckerService {
     }
 
     // Delete the check.
-    const affectedRows = await new CheckModel(logger).delete(checkId);
-    if (!affectedRows) {
+    const affectedRows = await new CheckModel(logger).delete(checkid);
+    if (isNaN(affectedRows!)) {
       return cb({
         name: "400",
         message: "Invalid checkId",
       });
     }
 
-    cb(null, {
-      status: "Success",
-    });
+    cb(null, new cardcheckerMessages.DeleteRes().setStatus("Success"));
   }
 
   /**
-   * A method to get a worker using his card Id.
-   * If not found, return null.
-   * @param logger - The logger object to trace the stack.
-   * @param cardId - The card id. It must belongs to some worker.
+   * A method to convert a DB check entry to a grpc message check.
+   * @param dbCheck
+   * @returns
    */
-  private static async getWorkerByCardId(
-    logger: Logger,
-    cardId: string
-  ): Promise<types.ProtoWorker | undefined> {
-    // Check if the provided card is valid.
-    if (!SecurityModel.isValidCardId(cardId)) {
-      logger.info("The provided card is invalid.");
-      return;
-    }
-
-    // Try to found the worker.
-    const worker = await new WorkerModel(logger).findByCardId(cardId);
-    return worker;
+  public static dbCheckToProtoCheck(
+    dbCheck: Model<types.DbCheck>
+  ): cardcheckerMessages.Check {
+    const check = dbCheck.toJSON();
+    return new cardcheckerMessages.Check()
+      .setId(check.id)
+      .setChecktime(check.check_time.toISOString())
+      .setWorkerid(check.fk_worker_id);
   }
 }
 

@@ -12,11 +12,10 @@ USER node
 
 # Install the packages.
 COPY --chown=node package.json .
-RUN yarn
+RUN yarn --production
 
 # Copy the project.
 COPY --chown=node ./tsconfig.json .
-COPY --chown=node ./proto ./proto
 COPY --chown=node ./src ./src
 
 # Init the project

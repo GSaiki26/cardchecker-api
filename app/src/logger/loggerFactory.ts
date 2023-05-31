@@ -12,12 +12,10 @@ class LoggerFactory {
     return createLogger({
       format: combine(
         colorize(),
-        timestamp({
-          format: "YYYY-MM-DD HH:mm:ss",
-        }),
+        timestamp(),
         printf(
           (info) =>
-            `[${info.level}] ${info.timestamp} (SERVER[${process.pid}] ${owner}) - ${info.message}`
+            `[${info.timestamp}] (${info.level}) SERVER#${process.pid} ${owner} - ${info.message}`
         )
       ),
       transports: [new winston.transports.Console()],
