@@ -1,19 +1,17 @@
 version: '3.9'
 
-x-loki: &loki
-  logging:
-    driver: loki
-    options:
-      loki-url: "https://loki-url/loki/api/v1/push"
-      loki-headers: "Authorization=Basic user:pass"
-      loki-tls-ca-file: "./certs/ca.pem"
+# x-loki-logging: &loki
+#   logging:
+#     driver: loki
+#     options:
+#       loki-url: "loki-url"
 
 services:
   cardchecker-api:
     container_name: cardchecker-api
     build: ./app
     restart: unless-stopped
-    <<: *loki
+    # <<: *loki
     env_file:
       - ./api.env
       - ./db.env
@@ -30,7 +28,7 @@ services:
     container_name: cardchecker-db
     image: postgres:15.2-alpine
     restart: unless-stopped
-    <<: *loki
+    # <<: *loki
     env_file:
       - ./db.env
     networks:

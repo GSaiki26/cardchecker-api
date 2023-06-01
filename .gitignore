@@ -8,3 +8,4 @@ node_modules
 *.lock
 .dockerignore
 worker.proto
+*_pb.*
