@@ -1,0 +1,10 @@
+# Folders
+certs
+data
+node_modules
+
+# Files
+*.env
+.dockerignore
+worker.proto
+*_pb.*
