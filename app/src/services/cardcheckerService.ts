@@ -124,11 +124,6 @@ class CardCheckerService {
       new Date(dateinit),
       new Date(dateend)
     );
-    if (!checks.length)
-      return cb({
-        name: "400",
-        message: "Invalid request.",
-      });
 
     // Treat the data from the checks.
     const treated = checks.map((check) => this.dbCheckToProtoCheck(check));

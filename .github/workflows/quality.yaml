@@ -21,8 +21,8 @@ jobs:
         with:
           node-version: ${{ matrix.version }}
 
-      - name: Install prettier
-        run: npm i -g prettier
+      - name: Install packages
+        run: cd app; yarn
 
       - name: Run prettier
         run: cd app; yarn run linter

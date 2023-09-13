@@ -5,7 +5,6 @@ node_modules
 
 # Files
 *.env
-*.lock
 .dockerignore
 worker.proto
 *_pb.*
